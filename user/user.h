@@ -1,3 +1,6 @@
+#define MAX_ARG_BYTES 512
+#define MAX_LINE_LEN 1024
+
 struct stat;
 struct rtcdate;
 
@@ -11,9 +14,11 @@ int read(int, void*, int);
 int close(int);
 int kill(int);
 int exec(char*, char**);
+// return -1 for cannot open 
 int open(const char*, int);
 int mknod(const char*, short, short);
 int unlink(const char*);
+// get info to a opened fd
 int fstat(int fd, struct stat*);
 int link(const char*, const char*);
 int mkdir(const char*);
@@ -40,3 +45,7 @@ void free(void*);
 int atoi(const char*);
 int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
+int is_number(char*);
+
+
+
