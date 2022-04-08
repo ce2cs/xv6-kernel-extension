@@ -131,7 +131,7 @@ found:
     release(&p->lock);
     return 0;
   }
-  uint64 va = KSTACK(0);
+  uint64 va = KSTACK(p - proc);
   mappages(p->kernel_pagetable, va, PGSIZE, (uint64) pa, PTE_R | PTE_W);
   p->kstack = va;
 
@@ -167,11 +167,7 @@ freeproc(struct proc *p)
 
   // LAB free the process's kernel page table
   
-  uint64 kstack_pa = walkaddr_kpgtbl(p->kernel_pagetable, p->kstack);
-  if (kstack_pa == 0) {
-    panic("freeproc: kstack_pa is 0");
-  }
-  kfree((void *) kstack_pa);
+  uvmunmap(p->kernel_pagetable, p->kstack, 1, 1);
   p->kstack = 0;
   if (p->kernel_pagetable)
     free_kpagetable(p->kernel_pagetable);

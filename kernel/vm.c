@@ -47,21 +47,33 @@ pagetable_t kpagetable_init()
 {
   // get 4096 bytes
   pagetable_t pagetable = (pagetable_t)kalloc();
-  memset(pagetable, 0, PGSIZE);
-  kpagetable_init_helper(pagetable, kernel_pagetable);
+  if (pagetable == 0) {
+    panic("kpagetable_init: kalloc failed");
+  }
+  memcpy(pagetable, kernel_pagetable, PGSIZE);
+  pagetable_t next_level_pgtbl_dst = (pagetable_t)(kalloc());
+  if (next_level_pgtbl_dst == 0)
+  {
+    panic("kpagetable_init: kalloc failed");
+  }
+  memset(next_level_pgtbl_dst, 0, PGSIZE);
+  pagetable[0] = PA2PTE(next_level_pgtbl_dst) | PTE_FLAGS(kernel_pagetable[0]); 
+  pagetable_t next_level_pgtbl_src = (pagetable_t)PTE2PA(kernel_pagetable[0]);
+  kpagetable_init_helper(next_level_pgtbl_dst, next_level_pgtbl_src);
   // # ifdef DEBUG
   // if (called_count == 0) {
   //   printf("----------------global kernel page table----------------\n");
-  //   vmprint(kernel_pagetable);
+  //   vmprint(next_level_pgtbl_dst);
   //   printf("----------------process kernel page table----------------\n");
-  //   vmprint(pagetable);
+  //   vmprint(next_level_pgtbl_src);
   // }
   // called_count += 1;
   // # endif
   return pagetable;
 }
 
-void free_kpagetable(pagetable_t pagetable)
+
+void free_kpagetable_helper(pagetable_t pagetable)
 {
   for (int i = 0; i < 512; ++i) {
     pte_t pte = pagetable[i];
@@ -70,11 +82,19 @@ void free_kpagetable(pagetable_t pagetable)
         continue;
       }
       pagetable_t next_level_pgtbl = (pagetable_t)PTE2PA(pte);
-      free_kpagetable(next_level_pgtbl);
+      free_kpagetable_helper(next_level_pgtbl);
     }
   }
   kfree((void *) pagetable);
 }
+
+void free_kpagetable(pagetable_t pagetable)
+{
+  pagetable_t pgtbl = (pagetable_t) PTE2PA(pagetable[0]);
+  free_kpagetable_helper((pagetable_t) pgtbl);
+  kfree(pagetable);
+}
+
 /*
  * create a direct-map page table for the kernel.
  */
@@ -461,6 +481,10 @@ int copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
   return 0;
 }
 
+// int copyin_new(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len) {
+//   mappages(myproc()->kernel_pagetable, va, len, )
+// }
+
 // Copy from user to kernel.
 // Copy len bytes to dst from virtual address srcva in a given page table.
 // Return 0 on success, -1 on error.
@@ -484,6 +508,7 @@ int copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
     srcva = va0 + PGSIZE;
   }
   return 0;
+  // copyin_new(pagetable, dst, srcva, len);,
 }
 
 // Copy a null-terminated string from user to kernel.
