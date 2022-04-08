@@ -80,6 +80,7 @@ argstr(int n, char *buf, int max)
   uint64 addr;
   if(argaddr(n, &addr) < 0)
     return -1;
+    // addr is the virtual address from user table on the string
   return fetchstr(addr, buf, max);
 }
 
@@ -137,6 +138,7 @@ syscall(void)
 
   num = p->trapframe->a7;
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
+    // store the return value to userspace
     p->trapframe->a0 = syscalls[num]();
   } else {
     printf("%d %s: unknown sys call %d\n",

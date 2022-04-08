@@ -26,9 +26,47 @@ uservec:
         
 	# swap a0 and sscratch
         # so that a0 is TRAPFRAME
+        # sscratch is a helper register
         csrrw a0, sscratch, a0
 
         # save the user registers in TRAPFRAME
+
+        # /*   0 */ uint64 kernel_satp;   // kernel page table
+        # /*   8 */ uint64 kernel_sp;     // top of process's kernel stack
+        # /*  16 */ uint64 kernel_trap;   // usertrap()
+        # /*  24 */ uint64 epc;           // saved user program counter
+        # /*  32 */ uint64 kernel_hartid; // saved kernel tp
+        # /*  40 */ uint64 ra;
+        # /*  48 */ uint64 sp;
+        # /*  56 */ uint64 gp;
+        # /*  64 */ uint64 tp;
+        # /*  72 */ uint64 t0;
+        # /*  80 */ uint64 t1;
+        # /*  88 */ uint64 t2;
+        # /*  96 */ uint64 s0;
+        # /* 104 */ uint64 s1;
+        # /* 112 */ uint64 a0;
+        # /* 120 */ uint64 a1;
+        # /* 128 */ uint64 a2;
+        # /* 136 */ uint64 a3;
+        # /* 144 */ uint64 a4;
+        # /* 152 */ uint64 a5;
+        # /* 160 */ uint64 a6;
+        # /* 168 */ uint64 a7;
+        # /* 176 */ uint64 s2;
+        # /* 184 */ uint64 s3;
+        # /* 192 */ uint64 s4;
+        # /* 200 */ uint64 s5;
+        # /* 208 */ uint64 s6;
+        # /* 216 */ uint64 s7;
+        # /* 224 */ uint64 s8;
+        # /* 232 */ uint64 s9;
+        # /* 240 */ uint64 s10;
+        # /* 248 */ uint64 s11;
+        # /* 256 */ uint64 t3;
+        # /* 264 */ uint64 t4;
+        # /* 272 */ uint64 t5;
+        # /* 280 */ uint64 t6;
         sd ra, 40(a0)
         sd sp, 48(a0)
         sd gp, 56(a0)
@@ -75,6 +113,7 @@ uservec:
 
         # restore kernel page table from p->trapframe->kernel_satp
         ld t1, 0(a0)
+        # set the kernel page table
         csrw satp, t1
         sfence.vma zero, zero
 
@@ -138,4 +177,5 @@ userret:
         
         # return to user mode and user pc.
         # usertrapret() set up sstatus and sepc.
+        # and will enable interrupts.
         sret

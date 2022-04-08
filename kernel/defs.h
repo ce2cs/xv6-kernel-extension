@@ -12,6 +12,7 @@ struct superblock;
 struct mbuf;
 struct sock;
 #endif
+#define DEBUG
 
 // bio.c
 void            binit(void);
@@ -134,6 +135,7 @@ char*           safestrcpy(char*, const char*, int);
 int             strlen(const char*);
 int             strncmp(const char*, const char*, uint);
 char*           strncpy(char*, const char*, int);
+void*           memcpy(void*, const void*, uint);
 
 // syscall.c
 int             argint(int, int*);
@@ -169,6 +171,9 @@ uint64          uvmalloc(pagetable_t, uint64, uint64);
 uint64          uvmdealloc(pagetable_t, uint64, uint64);
 #ifdef SOL_COW
 #else
+pagetable_t     kpagetable_init(void);
+void            free_kpagetable(pagetable_t);
+uint64          walkaddr_kpgtbl(pagetable_t, uint64);
 int             uvmcopy(pagetable_t, pagetable_t, uint64);
 #endif
 void            uvmfree(pagetable_t, uint64);
@@ -178,6 +183,7 @@ uint64          walkaddr(pagetable_t, uint64);
 int             copyout(pagetable_t, uint64, char *, uint64);
 int             copyin(pagetable_t, char *, uint64, uint64);
 int             copyinstr(pagetable_t, char *, uint64, uint64);
+void            vmprint(pagetable_t);
 
 // plic.c
 void            plicinit(void);

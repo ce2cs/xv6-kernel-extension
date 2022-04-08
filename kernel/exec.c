@@ -23,6 +23,7 @@ exec(char *path, char **argv)
 
   begin_op();
 
+  // get inode by path
   if((ip = namei(path)) == 0){
     end_op();
     return -1;
@@ -35,6 +36,7 @@ exec(char *path, char **argv)
   if(elf.magic != ELF_MAGIC)
     goto bad;
 
+  // create a new page table
   if((pagetable = proc_pagetable(p)) == 0)
     goto bad;
 
@@ -46,6 +48,8 @@ exec(char *path, char **argv)
       continue;
     if(ph.memsz < ph.filesz)
       goto bad;
+    // Q: why we can get vddr and addr A: specified by user
+    // check vddr + memsz overflow of int64
     if(ph.vaddr + ph.memsz < ph.vaddr)
       goto bad;
     uint64 sz1;
@@ -72,6 +76,7 @@ exec(char *path, char **argv)
     goto bad;
   sz = sz1;
   uvmclear(pagetable, sz-2*PGSIZE);
+  // stack pointer, stack grow toward stack base
   sp = sz;
   stackbase = sp - PGSIZE;
 
@@ -80,6 +85,7 @@ exec(char *path, char **argv)
     if(argc >= MAXARG)
       goto bad;
     sp -= strlen(argv[argc]) + 1;
+    // ????
     sp -= sp % 16; // riscv sp must be 16-byte aligned
     if(sp < stackbase)
       goto bad;
@@ -116,6 +122,9 @@ exec(char *path, char **argv)
   p->trapframe->sp = sp; // initial stack pointer
   proc_freepagetable(oldpagetable, oldsz);
 
+  if(p->pid==1) {
+    vmprint(p->pagetable);
+  }
   return argc; // this ends up in a0, the first argument to main(argc, argv)
 
  bad:
