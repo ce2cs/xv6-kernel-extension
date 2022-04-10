@@ -1,0 +1,23 @@
+{
+    "files.associations": {
+        "elf.h": "c",
+        "defs.h": "c",
+        "locale": "c",
+        "string": "c",
+        "syscall.h": "c",
+        "__config": "c",
+        "__string": "c",
+        "cstring": "c",
+        "memory": "c",
+        "utility": "c",
+        "riscv.h": "c",
+        "param.h": "c",
+        "types.h": "c",
+        "__bit_reference": "c",
+        "fs.h": "c",
+        "proc.h": "c",
+        "vector": "c",
+        "spinlock.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
+}
