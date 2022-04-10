@@ -175,6 +175,7 @@ pagetable_t     kpagetable_init(void);
 void            free_kpagetable(pagetable_t);
 uint64          walkaddr_kpgtbl(pagetable_t, uint64);
 int             uvmcopy(pagetable_t, pagetable_t, uint64);
+void            kvmmapuser(pagetable_t, pagetable_t, uint64, uint64);
 #endif
 void            uvmfree(pagetable_t, uint64);
 void            uvmunmap(pagetable_t, uint64, uint64, int);
@@ -184,6 +185,11 @@ int             copyout(pagetable_t, uint64, char *, uint64);
 int             copyin(pagetable_t, char *, uint64, uint64);
 int             copyinstr(pagetable_t, char *, uint64, uint64);
 void            vmprint(pagetable_t);
+
+// vmcopyin.c
+int statscopyin(char *, int);
+int copyin_new(pagetable_t, char *, uint64, uint64);
+int copyinstr_new(pagetable_t, char *, uint64, uint64);
 
 // plic.c
 void            plicinit(void);

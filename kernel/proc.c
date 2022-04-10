@@ -259,6 +259,8 @@ userinit(void)
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
 
+  kvmmapuser(p->kernel_pagetable, p->pagetable, 0, p->sz);
+
   p->state = RUNNABLE;
 
   release(&p->lock);
@@ -273,14 +275,19 @@ growproc(int n)
   struct proc *p = myproc();
 
   sz = p->sz;
+  uint old_sz = sz;
   if(n > 0){
     if((sz = uvmalloc(p->pagetable, sz, sz + n)) == 0) {
       return -1;
     }
+    
   } else if(n < 0){
     sz = uvmdealloc(p->pagetable, sz, sz + n);
   }
   p->sz = sz;
+
+  // LAB: map the growed user page table to the kernel page table
+  kvmmapuser(p->kernel_pagetable, p->pagetable, old_sz, p->sz);
   return 0;
 }
 
@@ -323,6 +330,9 @@ fork(void)
   safestrcpy(np->name, p->name, sizeof(p->name));
 
   pid = np->pid;
+
+  // LAB: map the child's user page table to its kernel page table
+  kvmmapuser(np->kernel_pagetable, np->pagetable, 0, np->sz);
 
   np->state = RUNNABLE;
 
