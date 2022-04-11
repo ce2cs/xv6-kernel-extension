@@ -1,9 +1,13 @@
+# define ALARM_DISABLE 0
+# define ALARM_ENABLE 1
+# define ALARM_EXECUTING 2
+
 // Saved registers for kernel context switches.
 struct context {
   uint64 ra;
   uint64 sp;
 
-  // callee-saved
+  // callee-saved 
   uint64 s0;
   uint64 s1;
   uint64 s2;
@@ -103,4 +107,11 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+  // lab4
+  int alarm_interval;
+  void (*alarm_handler)(void);
+  int ticks;
+  int alarm_status;
+  struct trapframe *saved_trapframe;
 };

@@ -17,7 +17,14 @@
         "fs.h": "c",
         "proc.h": "c",
         "vector": "c",
-        "spinlock.h": "c"
+        "spinlock.h": "c",
+        "stdarg.h": "c",
+        "__mutex_base": "c",
+        "__threading_support": "c",
+        "algorithm": "c",
+        "bitset": "c",
+        "chrono": "c",
+        "unordered_map": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

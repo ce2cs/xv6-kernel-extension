@@ -1,0 +1,5 @@
+break kvmmapuser
+break userinit
+break exec
+break growproc
+break fork

@@ -77,9 +77,22 @@ usertrap(void)
     exit(-1);
 
   // give up the CPU if this is a timer interrupt.
-  if(which_dev == 2)
-    yield();
-
+  if(which_dev == 2) {
+    // Lab4: check and run handler function
+    if (p->alarm_status == ALARM_ENABLE) {
+      if (p->alarm_interval <= 0 || p->alarm_handler < 0) {
+        panic("usertrap: invalid alarm handler or interval");
+      }
+      p->ticks++;
+      if (p->ticks >= p->alarm_interval) {
+        p->ticks %= p->alarm_interval;
+        p->alarm_status = ALARM_EXECUTING;
+        memmove(p->saved_trapframe, p->trapframe, sizeof(struct trapframe));
+        p->trapframe->epc = (uint64) p->alarm_handler;
+      }
+    }
+   yield();
+  }
   usertrapret();
 }
 

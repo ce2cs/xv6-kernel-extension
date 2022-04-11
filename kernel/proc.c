@@ -127,6 +127,13 @@ found:
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
 
+  // Lab4: initialize alarm fields
+
+  p->alarm_interval = 0;
+  p->alarm_handler = 0;
+  p->ticks = 0;
+  p->alarm_status = ALARM_DISABLE;
+  p->saved_trapframe = 0;
   return p;
 }
 

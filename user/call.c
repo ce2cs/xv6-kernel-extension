@@ -12,6 +12,10 @@ int f(int x) {
 }
 
 void main(void) {
-  printf("%d %d\n", f(8)+1, 13);
+  int x = 0;
+  x = g(x);
+  printf("%d\n", x);
+  x = f(g(x));
+  printf("%d\n", x);
   exit(0);
 }
