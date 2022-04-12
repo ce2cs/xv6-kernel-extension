@@ -48,7 +48,15 @@ sys_sbrk(void)
   if(argint(0, &n) < 0)
     return -1;
   addr = p->sz;
-  p->sz += n;
+  // Lab 5
+  if (n >= 0) {
+    p->sz += n;
+  } else {
+    if (p->sz + n < 0) {
+      return -1;
+    }
+    p->sz = uvmdealloc(p->pagetable, p->sz, p->sz + n);
+  }
   // if(growproc(n) < 0)
   //   return -1;
   return addr;

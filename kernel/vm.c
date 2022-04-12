@@ -5,6 +5,8 @@
 #include "riscv.h"
 #include "defs.h"
 #include "fs.h"
+#include "spinlock.h"
+#include "proc.h"
 
 /*
  * the kernel's page table.
@@ -181,9 +183,11 @@ uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
 
   for(a = va; a < va + npages*PGSIZE; a += PGSIZE){
     if((pte = walk(pagetable, a, 0)) == 0)
-      panic("uvmunmap: walk");
+      continue;
+      // panic("uvmunmap: walk");
     if((*pte & PTE_V) == 0)
       continue;
+      // panic("uvmunmap: not mapped");
     if(PTE_FLAGS(*pte) == PTE_V)
       panic("uvmunmap: not a leaf");
     if(do_free){
@@ -315,9 +319,11 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
 
   for(i = 0; i < sz; i += PGSIZE){
     if((pte = walk(old, i, 0)) == 0)
-      panic("uvmcopy: pte should exist");
+      // panic("uvmcopy: pte should exist");
+      continue;
     if((*pte & PTE_V) == 0)
-      panic("uvmcopy: page not present");
+      continue;
+      // panic("uvmcopy: page not present");
     pa = PTE2PA(*pte);
     flags = PTE_FLAGS(*pte);
     if((mem = kalloc()) == 0)
@@ -359,8 +365,20 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
   while(len > 0){
     va0 = PGROUNDDOWN(dstva);
     pa0 = walkaddr(pagetable, va0);
-    if(pa0 == 0)
-      return -1;
+    if(pa0 == 0) {
+      // Lab 5: copyin needs to walk thru user pagetable but
+      // the page has not been allocated yet.
+      // So we need to allocate the page first.
+      struct proc *p = myproc();
+      if (lazy_alloc_page(p, va0) == 0) {
+        return -1;
+      }
+      pa0 = walkaddr(pagetable, va0);
+      if (pa0 == 0) {
+        return -1;
+      }
+      // return -1;
+    }
     n = PGSIZE - (dstva - va0);
     if(n > len)
       n = len;
@@ -384,8 +402,20 @@ copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
   while(len > 0){
     va0 = PGROUNDDOWN(srcva);
     pa0 = walkaddr(pagetable, va0);
-    if(pa0 == 0)
-      return -1;
+    if(pa0 == 0) {
+      // Lab 5: copyin needs to walk thru user pagetable but
+      // the page has not been allocated yet.
+      // So we need to allocate the page first.
+      struct proc *p = myproc();
+      if (lazy_alloc_page(p, va0) == 0) {
+        return -1;
+      }
+      pa0 = walkaddr(pagetable, va0);
+      if (pa0 == 0) {
+        return -1;
+      }
+      // return -1;
+    }
     n = PGSIZE - (srcva - va0);
     if(n > len)
       n = len;
@@ -411,8 +441,20 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
   while(got_null == 0 && max > 0){
     va0 = PGROUNDDOWN(srcva);
     pa0 = walkaddr(pagetable, va0);
-    if(pa0 == 0)
-      return -1;
+    if(pa0 == 0) {
+      // Lab 5: copyin needs to walk thru user pagetable but
+      // the page has not been allocated yet.
+      // So we need to allocate the page first.
+      struct proc *p = myproc();
+      if (lazy_alloc_page(p, va0) == 0) {
+        return -1;
+      }
+      pa0 = walkaddr(pagetable, va0);
+      if (pa0 == 0) {
+        return -1;
+      }
+      // return -1;
+    }
     n = PGSIZE - (srcva - va0);
     if(n > max)
       n = max;
@@ -439,4 +481,35 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
   } else {
     return -1;
   }
+}
+
+void vmprint_helper(pagetable_t pagetable, int level)
+{
+  pte_t pte;
+  pte_t child;
+  int i;
+  int j;
+  for (i = 0; i < 512; ++i)
+  {
+    pte = pagetable[i];
+    if (pte & PTE_V)
+    {
+      for (j = -1; j < level; ++j)
+      {
+        printf("..");
+      }
+      child = PTE2PA(pte);
+      printf("%d: pte %p pa %p\n", i, pte, child);
+      if ((pte & (PTE_R | PTE_W | PTE_X)) == 0)
+      {
+        vmprint_helper((pagetable_t)child, level + 1);
+      }
+    }
+  }
+}
+
+void vmprint(pagetable_t pagetable)
+{
+  printf("page table %p\n", pagetable);
+  vmprint_helper(pagetable, 0);
 }
