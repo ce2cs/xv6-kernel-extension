@@ -33,6 +33,7 @@ int
 plic_claim(void)
 {
   int hart = cpuid();
+  // read address on PLIC
   int irq = *(uint32*)PLIC_SCLAIM(hart);
   return irq;
 }

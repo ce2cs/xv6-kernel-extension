@@ -8,6 +8,7 @@
 #include "spinlock.h"
 #include "riscv.h"
 #include "defs.h"
+#define PA2REF(pa) (((uint64)pa - KERNBASE) / PGSIZE)
 
 void freerange(void *pa_start, void *pa_end);
 
@@ -23,10 +24,28 @@ struct {
   struct run *freelist;
 } kmem;
 
+// LAB 6 with reference count to pa
+int page_ref_count[(PHYSTOP - KERNBASE) / PGSIZE];
+
+void increase_ref_count(void *pa) {
+  if ((uint64) pa < KERNBASE || (uint64) pa >= PHYSTOP)
+    panic("increase_ref_count: invalid pa");
+  int index = PA2REF(pa);
+  acquire(&kmem.lock);
+  if (page_ref_count[index] <= 0)
+    panic("increase_ref_count: ref_count <= 0");
+  page_ref_count[index]++;
+  release(&kmem.lock);
+}
+
 void
 kinit()
 {
+  int i = 0;
   initlock(&kmem.lock, "kmem");
+  for (i = 0; i < PA2REF(PHYSTOP); i++) {
+    page_ref_count[i] = 1;
+  }
   freerange(end, (void*)PHYSTOP);
 }
 
@@ -50,6 +69,20 @@ kfree(void *pa)
 
   if(((uint64)pa % PGSIZE) != 0 || (char*)pa < end || (uint64)pa >= PHYSTOP)
     panic("kfree");
+
+  // Lab 6: if ref count is not 0, decrease it
+  uint64 ref_i = PA2REF(pa);
+  acquire(&kmem.lock);
+  if (page_ref_count[ref_i] > 0) {
+    page_ref_count[ref_i]--;
+    if (page_ref_count[ref_i] > 0) {
+      release(&kmem.lock);
+      return;
+    }
+  } else {
+    panic("kfree: page_ref_count is 0");
+  }
+  release(&kmem.lock);
 
   // Fill with junk to catch dangling refs.
   memset(pa, 1, PGSIZE);
@@ -76,7 +109,10 @@ kalloc(void)
     kmem.freelist = r->next;
   release(&kmem.lock);
 
-  if(r)
+  if(r) {
+    // Lab 6: increase ref count
+    page_ref_count[PA2REF(r)]++;
     memset((char*)r, 5, PGSIZE); // fill with junk
+  }
   return (void*)r;
 }
