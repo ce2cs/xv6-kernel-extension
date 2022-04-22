@@ -123,6 +123,7 @@ found:
 
   // Set up new context to start executing at forkret,
   // which returns to user space.
+  // currently holds the p->lock
   memset(&p->context, 0, sizeof(p->context));
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
@@ -213,6 +214,7 @@ userinit(void)
 {
   struct proc *p;
 
+  // still holds the lock after this call
   p = allocproc();
   initproc = p;
   
@@ -476,7 +478,11 @@ scheduler(void)
         // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
+        // the first time we will return to 
         swtch(&c->context, &p->context);
+
+
+        // c->context->ra points to here
 
         // Process is done running for now.
         // It should have changed its p->state before coming back.
@@ -515,6 +521,8 @@ sched(void)
 
   intena = mycpu()->intena;
   swtch(&p->context, &mycpu()->context);
+
+  // p->context->ra here
   mycpu()->intena = intena;
 }
 
@@ -573,6 +581,8 @@ sleep(void *chan, struct spinlock *lk)
   p->state = SLEEPING;
 
   sched();
+  
+  // awake from here
 
   // Tidy up.
   p->chan = 0;
@@ -593,6 +603,7 @@ wakeup(void *chan)
 
   for(p = proc; p < &proc[NPROC]; p++) {
     acquire(&p->lock);
+    // p->chan is the address of the identity of the lock and key
     if(p->state == SLEEPING && p->chan == chan) {
       p->state = RUNNABLE;
     }
