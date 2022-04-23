@@ -63,10 +63,13 @@ bget(uint dev, uint blockno)
   acquire(&bcache.lock);
 
   // Is the block already cached?
+  // loop from most-recently-used to least-recently-used
   for(b = bcache.head.next; b != &bcache.head; b = b->next){
     if(b->dev == dev && b->blockno == blockno){
       b->refcnt++;
       release(&bcache.lock);
+      // can be placed after the release of bcache.lock because
+      // the reference count prevents other section use this buffer
       acquiresleep(&b->lock);
       return b;
     }
@@ -74,6 +77,7 @@ bget(uint dev, uint blockno)
 
   // Not cached.
   // Recycle the least recently used (LRU) unused buffer.
+  // loop from least-recently-used to most-recently-used
   for(b = bcache.head.prev; b != &bcache.head; b = b->prev){
     if(b->refcnt == 0) {
       b->dev = dev;
@@ -125,6 +129,7 @@ brelse(struct buf *b)
   b->refcnt--;
   if (b->refcnt == 0) {
     // no one is waiting for it.
+    // move the the front of the LRU list. which is most recently used.
     b->next->prev = b->prev;
     b->prev->next = b->next;
     b->next = bcache.head.next;

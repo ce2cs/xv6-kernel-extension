@@ -4,7 +4,7 @@ struct buf {
   uint dev;
   uint blockno;
   struct sleeplock lock;
-  uint refcnt;
+  uint refcnt; // used to decide when to move to the head of the LRU list
   struct buf *prev; // LRU cache list
   struct buf *next;
   uchar data[BSIZE];
