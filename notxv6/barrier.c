@@ -20,6 +20,7 @@ barrier_init(void)
   assert(pthread_mutex_init(&bstate.barrier_mutex, NULL) == 0);
   assert(pthread_cond_init(&bstate.barrier_cond, NULL) == 0);
   bstate.nthread = 0;
+  bstate.round =  0;
 }
 
 static void 
@@ -30,7 +31,30 @@ barrier()
   // Block until all threads have called barrier() and
   // then increment bstate.round.
   //
-  
+  // printf("acquring lock\n");
+  pthread_mutex_lock(&bstate.barrier_mutex);
+  bstate.nthread++;
+  // printf("add nthread, now: %d\n", bstate.nthread);
+  if (bstate.nthread == nthread) {
+    pthread_cond_broadcast(&bstate.barrier_cond);
+  }
+  while (bstate.nthread != nthread && bstate.round == round) {
+    // printf("go to sleep at nthread\n");
+    pthread_cond_wait(&bstate.barrier_cond, &bstate.barrier_mutex);
+    // printf("wake up, now nthread: %d, bstate round: %d, global round: %d\n", bstate.nthread, bstate.round, round);
+  }
+  bstate.nthread--;
+  bstate.round = round + 1;
+  if (bstate.nthread == 0) {
+    round = bstate.round;
+    pthread_cond_broadcast(&bstate.barrier_cond);
+  }
+  while (bstate.round != round) {
+    // printf("go to sleep at round\n");
+    pthread_cond_wait(&bstate.barrier_cond, &bstate.barrier_mutex);
+    // printf("wake up, now nthread: %d, bstate round: %d, global round: %d\n", bstate.nthread, bstate.round, round);
+  }
+  pthread_mutex_unlock(&bstate.barrier_mutex);
 }
 
 static void *
