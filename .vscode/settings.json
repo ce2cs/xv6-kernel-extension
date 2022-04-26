@@ -1,6 +1,20 @@
 {
     "files.associations": {
         "defs.h": "c",
-        "riscv.h": "c"
+        "riscv.h": "c",
+        "sleeplock.h": "c",
+        "spinlock.h": "c",
+        "__threading_support": "c",
+        "__functional_base": "c",
+        "array": "c",
+        "istream": "c",
+        "locale": "c",
+        "memory": "c",
+        "tuple": "c",
+        "utility": "c",
+        "cstdlib": "c",
+        "ostream": "c",
+        "new": "c",
+        "streambuf": "c"
     }
 }
