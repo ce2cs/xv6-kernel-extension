@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "defs.h": "c",
+        "syscall.h": "c",
+        "__functional_03": "c",
+        "functional": "c",
+        "locale": "c",
+        "__config": "c"
+    }
+}
