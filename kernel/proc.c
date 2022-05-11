@@ -296,6 +296,20 @@ fork(void)
       np->ofile[i] = filedup(p->ofile[i]);
   np->cwd = idup(p->cwd);
 
+  for (i = 0; i < 16; i++) {
+    if (p->vmas[i].occupied) {
+      np->vmas[i].addr = p->vmas[i].addr;
+      np->vmas[i].flags = p->vmas[i].flags;
+      np->vmas[i].mapped_addr = p->vmas[i].mapped_addr;
+      np->vmas[i].occupied = p->vmas[i].occupied;
+      np->vmas[i].prot = p->vmas[i].prot;
+      np->vmas[i].mmaped_pages = p->vmas[i].mmaped_pages;
+      np->vmas[i].length = p->vmas[i].length;
+      np->vmas[i].file = p->vmas[i].file;
+      filedup(p->vmas[i].file);
+    }
+  }
+
   safestrcpy(np->name, p->name, sizeof(p->name));
 
   pid = np->pid;
@@ -351,6 +365,16 @@ exit(int status)
       fileclose(f);
       p->ofile[fd] = 0;
     }
+  }
+
+  for (int i = 0; i < 16; i++) {
+    if (!p->vmas[i].occupied) {
+      continue;
+    }
+    // printf("exit: free addr %p with length %d\n", p->vmas[i].addr, p->vmas[i].length);
+    uvmunmap(p->pagetable, p->vmas[i].addr, p->vmas[i].length, 1);
+    p->vmas[i].occupied = 0;
+    fileclose(p->vmas[i].file);
   }
 
   begin_op();

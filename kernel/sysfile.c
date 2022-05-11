@@ -484,3 +484,25 @@ sys_pipe(void)
   }
   return 0;
 }
+
+
+// uint64
+// sys_mmap(void) {
+//   uint64 addr, len, prot, flags, fd, off;
+//   uint64 mapped_addr = 0xffffffffffffffff;
+//   struct proc *p;
+//   if (argaddr(0, &addr) < 0 || argint(1, &len) < 0 || argint(2, &prot) < 0 || 
+//       argint(3, &flags) < 0 || argint(4, &fd) < 0 || argint(5, &off) < 0) {
+//     return -1;
+//   }
+
+//   p = myproc();
+//   addr = p->sz;
+//   growproc(len);
+//   panic("mmap not implemented");
+// }
+
+// uint64
+// sys_munmap(void) {
+//     panic("munmap");
+// }

@@ -1,0 +1,73 @@
+make --dry-run --keep-going --print-directory
+***
+*** Error: Couldn't find a riscv64 version of GCC/binutils.
+
+*** To turn off this error, run 'gmake TOOLPREFIX= ...'.
+***
+
+make: Entering directory `/Users/boyang/Courses/xv6-labs-2020'
+gcc    -c -o kernel/entry.o kernel/entry.S
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/start.o kernel/start.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/console.o kernel/console.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/printf.o kernel/printf.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/uart.o kernel/uart.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/kalloc.o kernel/kalloc.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/spinlock.o kernel/spinlock.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/string.o kernel/string.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/main.o kernel/main.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/vm.o kernel/vm.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/proc.o kernel/proc.c
+ 
+gcc    -c -o kernel/swtch.o kernel/swtch.S
+gcc    -c -o kernel/trampoline.o kernel/trampoline.S
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/trap.o kernel/trap.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/syscall.o kernel/syscall.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/sysproc.o kernel/sysproc.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/bio.o kernel/bio.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/fs.o kernel/fs.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/log.o kernel/log.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/sleeplock.o kernel/sleeplock.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/file.o kernel/file.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/pipe.o kernel/pipe.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/exec.o kernel/exec.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/sysfile.o kernel/sysfile.c
+ 
+gcc    -c -o kernel/kernelvec.o kernel/kernelvec.S
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/plic.o kernel/plic.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/virtio_disk.o kernel/virtio_disk.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector   -c -o kernel/mmap.o kernel/mmap.c
+ 
+gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -DSOL_MMAP -DLAB_MMAP -MD -mcmodel=medany -ffreestanding -fno-common -nostdlib -mno-relax -I. -fno-stack-protector -march=rv64g -nostdinc -I. -Ikernel -c user/initcode.S -o user/initcode.o
+ld -z max-page-size=4096 -N -e start -Ttext 0 -o user/initcode.out user/initcode.o
+objcopy -S -O binary user/initcode.out user/initcode
+objdump -S user/initcode.o > user/initcode.asm
+ 
+ld -z max-page-size=4096 -T kernel/kernel.ld -o kernel/kernel kernel/entry.o kernel/start.o kernel/console.o kernel/printf.o kernel/uart.o kernel/kalloc.o kernel/spinlock.o kernel/string.o kernel/main.o kernel/vm.o kernel/proc.o kernel/swtch.o kernel/trampoline.o kernel/trap.o kernel/syscall.o kernel/sysproc.o kernel/bio.o kernel/fs.o kernel/log.o kernel/sleeplock.o kernel/file.o kernel/pipe.o kernel/exec.o kernel/sysfile.o kernel/kernelvec.o kernel/plic.o kernel/virtio_disk.o kernel/mmap.o 
+objdump -S kernel/kernel > kernel/kernel.asm
+objdump -t kernel/kernel | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$/d' > kernel/kernel.sym
+make: Leaving directory `/Users/boyang/Courses/xv6-labs-2020'
+ 
